@@ -1,0 +1,43 @@
+{
+  "name": "@selia/bounding-box-annotator",
+  "version": "1.0.0",
+  "description": "Bounding box annotator for Selia",
+  "main": "index.js",
+  "scripts": {
+    "start": "webpack-dev-server",
+    "build": "NODE_ENV=production webpack --mode production"
+  },
+  "keywords": [
+    "selia",
+    "annotator",
+    "js",
+    "vis"
+  ],
+  "author": "CONABIO",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/cli": "^7.6.0",
+    "@babel/core": "^7.6.0",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.6.0",
+    "@babel/preset-react": "^7.0.0",
+    "@fortawesome/fontawesome-free": "^5.10.2",
+    "@selia/annotator": "^1.2.0",
+    "@selia/visualizer": "^1.2.0",
+    "babel-loader": "^8.0.6",
+    "bootstrap": "^4.3.1",
+    "concurrently": "^4.1.2",
+    "css-loader": "^3.2.0",
+    "express": "^4.17.1",
+    "file-loader": "^4.2.0",
+    "jquery": "^3.4.1",
+    "popper.js": "^1.15.0",
+    "react": "^16.9.0",
+    "react-dom": "^16.9.0",
+    "style-loader": "^1.0.0",
+    "webpack": "^4.39.3",
+    "webpack-cli": "^3.3.8",
+    "webpack-dev-server": "^3.8.0"
+  },
+  "dependencies": {}
+}
