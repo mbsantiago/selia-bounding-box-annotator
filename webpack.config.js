@@ -40,7 +40,7 @@ const visConfig = Object.assign({}, config, {
   output: {
     filename: 'annotator.js',
     path: path.join(__dirname, '/dist'),
-    library: 'Annotator',
+    library: 'AnnotatorTool',
     libraryTarget: 'umd',
   }
 });

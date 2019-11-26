@@ -1,5 +1,6 @@
 import AnnotatorBase from '@selia/annotator';
 
+
 class Annotator extends AnnotatorBase {
   getEvents() {
     this.onMouseDown = this.onMouseDown.bind(this);
