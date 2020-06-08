@@ -8,7 +8,7 @@
   <meta name="author" content="CONABIO">
 </head>
 
-<body class="bg-dark">
+<body class="bg-light">
   <div class="container-fluid p-4">
     <div id="alert-container" class="px-2">
     </div>
@@ -18,9 +18,13 @@
     </div>
     <div class="row">
       <div class="col">
-        <canvas id="annotatorCanvas" class="rounded mt-1 shadow bg-secondary" style="background-image: url('files/images.jpeg'); height: 600px; width: 100%; background-repeat: no-repeat; background-size: center; background-position: center;">
-        </canvas>
+        <div class="row" id="visualizerToolbar"></div>
+        <div class="row" id="annotatorToolbar"></div>
       </div>
+    </div>
+    <div class="row" style="position: relative; height: 30em; width: 100%">
+      <canvas id="visualizerCanvas" style="display: block; position: absolute; height: 100%; width: 100%;"></canvas>
+      <canvas id="annotatorCanvas" style="display: block; position: absolute; height: 100%; width: 100%;"></canvas>
     </div>
   </div>
 
