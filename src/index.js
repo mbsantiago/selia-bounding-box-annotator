@@ -14,11 +14,9 @@ let visualizer = null;
 let annotator = null;
 function visualizerActivator() {
   annotator.deactivate();
-  visualizer.activate();
 }
 
 function annotatorActivator() {
-  annotator.activate();
   visualizer.deactivate();
 }
 
@@ -55,7 +53,7 @@ function registerAnnotation(annotation) {
 visualizer = new Visualizer({
   canvas: document.getElementById('visualizerCanvas'),
   itemInfo: {
-    url: 'https://homepages.cae.wisc.edu/~ece533/images/baboon.png',
+    url: 'http://selia2.conabio.gob.mx/media/items/1/2/1/f9eaffd914aab6d7b9d77899da0377a681972eb3e01f3bdaeb5477aa4b1bb3f8.jpe',
   },
   activator: visualizerActivator,
   active: false,

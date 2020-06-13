@@ -8,7 +8,7 @@ import {
 } from './utils';
 
 
-const DISTANCE_THRESHOLD = 4;
+const DISTANCE_THRESHOLD = 5;
 
 const EDIT_POINT_RADIUS = 4;
 
