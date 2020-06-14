@@ -1,6 +1,4 @@
-import React from 'react';
 import AnnotatorBase from '@selia/annotator';
-
 import {
   distanceToPoint,
   distanceToAnnotation,
@@ -8,10 +6,8 @@ import {
 } from './utils';
 
 
-const DISTANCE_THRESHOLD = 5;
-
+const DISTANCE_THRESHOLD = 0.005;
 const EDIT_POINT_RADIUS = 4;
-
 const EDIT_POINT_RADIUS_SELECTED = 5;
 
 
@@ -62,12 +58,24 @@ class Annotator extends AnnotatorBase {
     }
 
     if (this.state === this.states.SELECT || this.state === this.states.DELETE) {
-      this.hoverOnAnnotationUpdate(this.visualizer.canvasToPoint(position));
+      this.hoverOnAnnotationUpdate(position);
     }
 
     if (this.state === this.states.EDIT) {
       this.handleMouseMoveOnEdit(position);
     }
+  }
+
+  annotationToCanvas(annotation) {
+    const { x: left, y: top } = this.visualizer.pointToCanvas(this.createPoint(
+      annotation.left, annotation.top,
+    ));
+
+    const { x: right, y: bottom } = this.visualizer.pointToCanvas(this.createPoint(
+      annotation.right, annotation.bottom,
+    ));
+
+    return { left, top, right, bottom };
   }
 
   onMouseUp() {
@@ -85,27 +93,26 @@ class Annotator extends AnnotatorBase {
   handleMouseDownOnEdit(position) {
     const annotation = this.annotations[this.selectedAnnotation];
     const point = this.visualizer.canvasToPoint(position);
-
-    const { left, right, top, bottom } = annotation;
+    const { left, top, right, bottom } = this.annotationToCanvas(annotation);
 
     this.edit.last = point;
     this.edit.start = point;
 
-    if (distanceToPoint(point, left, top) < DISTANCE_THRESHOLD) {
+    if (distanceToPoint(position, left, top) < DISTANCE_THRESHOLD) {
       this.edit.selected = 'topLeft';
-    } else if (distanceToPoint(point, left, bottom) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, left, bottom) < DISTANCE_THRESHOLD) {
       this.edit.selected = 'bottomLeft';
-    } else if (distanceToPoint(point, right, top) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, right, top) < DISTANCE_THRESHOLD) {
       this.edit.selected = 'topRight';
-    } else if (distanceToPoint(point, right, bottom) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, right, bottom) < DISTANCE_THRESHOLD) {
       this.edit.selected = 'bottomRight';
-    } else if (distanceToPoint(point, left, (top + bottom) / 2) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, left, (top + bottom) / 2) < DISTANCE_THRESHOLD) {
       this.edit.selected = 'left';
-    } else if (distanceToPoint(point, (left + right) / 2, top) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, (left + right) / 2, top) < DISTANCE_THRESHOLD) {
       this.edit.selected = 'top';
-    } else if (distanceToPoint(point, right, (top + bottom) / 2) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, right, (top + bottom) / 2) < DISTANCE_THRESHOLD) {
       this.edit.selected = 'right';
-    } else if (distanceToPoint(point, (left + right) / 2, bottom) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, (left + right) / 2, bottom) < DISTANCE_THRESHOLD) {
       this.edit.selected = 'bottom';
     } else if (isInAnnotation(point, annotation)) {
       this.edit.selected = 'move';
@@ -167,24 +174,24 @@ class Annotator extends AnnotatorBase {
 
   handleHoverOnEdit(position) {
     const annotation = this.annotations[this.selectedAnnotation];
-    const { left, top, bottom, right } = annotation;
     const point = this.visualizer.canvasToPoint(position);
+    const { left, top, right, bottom } = this.annotationToCanvas(annotation);
 
-    if (distanceToPoint(point, left, top) < DISTANCE_THRESHOLD) {
+    if (distanceToPoint(position, left, top) < DISTANCE_THRESHOLD) {
       this.edit.hover = 'topLeft';
-    } else if (distanceToPoint(point, left, bottom) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, left, bottom) < DISTANCE_THRESHOLD) {
       this.edit.hover = 'bottomLeft';
-    } else if (distanceToPoint(point, right, top) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, right, top) < DISTANCE_THRESHOLD) {
       this.edit.hover = 'topRight';
-    } else if (distanceToPoint(point, right, bottom) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, right, bottom) < DISTANCE_THRESHOLD) {
       this.edit.hover = 'bottomRight';
-    } else if (distanceToPoint(point, left, (top + bottom) / 2) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, left, (top + bottom) / 2) < DISTANCE_THRESHOLD) {
       this.edit.hover = 'left';
-    } else if (distanceToPoint(point, (left + right) / 2, top) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, (left + right) / 2, top) < DISTANCE_THRESHOLD) {
       this.edit.hover = 'top';
-    } else if (distanceToPoint(point, right, (top + bottom) / 2) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, right, (top + bottom) / 2) < DISTANCE_THRESHOLD) {
       this.edit.hover = 'right';
-    } else if (distanceToPoint(point, (left + right) / 2, bottom) < DISTANCE_THRESHOLD) {
+    } else if (distanceToPoint(position, (left + right) / 2, bottom) < DISTANCE_THRESHOLD) {
       this.edit.hover = 'bottom';
     } else if (isInAnnotation(point, annotation)) {
       this.edit.hover = 'move';
@@ -261,7 +268,8 @@ class Annotator extends AnnotatorBase {
     let selected = null;
 
     Object.entries(this.annotations).some(([annotationId, annotation]) => {
-      if (distanceToAnnotation(position, annotation) < DISTANCE_THRESHOLD) {
+      const canvasBox = this.annotationToCanvas(annotation);
+      if (distanceToAnnotation(position, canvasBox) < DISTANCE_THRESHOLD) {
         selected = annotationId;
         return true;
       }
@@ -344,17 +352,7 @@ class Annotator extends AnnotatorBase {
     };
   }
 
-  setState(state) {
-    AnnotatorBase.prototype.setState.call(this, state);
-
-    if (this.toolbar.setState) {
-      this.toolbar.setState({ state });
-    }
-  }
-
   init() {
-    this.toolbar = null;
-
     this.create = {
       start: null,
       end: null,

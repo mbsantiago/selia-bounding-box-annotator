@@ -52,6 +52,7 @@ function registerAnnotation(annotation) {
 
 visualizer = new Visualizer({
   canvas: document.getElementById('visualizerCanvas'),
+  toolbar: document.getElementById('visualizerToolbar'),
   itemInfo: {
     url: 'http://selia2.conabio.gob.mx/media/items/1/2/1/f9eaffd914aab6d7b9d77899da0377a681972eb3e01f3bdaeb5477aa4b1bb3f8.jpe',
   },
@@ -68,25 +69,9 @@ window.onkeypress = (event) => {
 import(/* webpackIgnore: true */'/annotator.js').then((module) => {
   annotator = new AnnotatorTool.default({
     canvas: document.getElementById('annotatorCanvas'),
-    state: 'create',
+    toolbar: document.getElementById('annotatorToolbar'),
     activator: annotatorActivator,
     visualizer,
     registerAnnotation,
   });
-
-  ReactDOM.render(
-    visualizer.renderToolbar(),
-    document.getElementById('visualizerToolbar'),
-    () => {
-      ReactDOM.render(
-        annotator.renderToolbar(),
-        document.getElementById('annotatorToolbar'),
-        () => {
-          annotator.adjustSize();
-          visualizer.draw();
-          annotator.draw();
-        },
-      );
-    },
-  );
 });
