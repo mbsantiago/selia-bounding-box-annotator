@@ -1,4 +1,4 @@
-import AnnotatorBase from '@selia/annotator';
+import AnnotatorBase from '../annotatorBase/index';
 import {
   distanceToPoint,
   distanceToAnnotation,

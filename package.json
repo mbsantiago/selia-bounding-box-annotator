@@ -44,7 +44,7 @@
     "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {
-    "@selia/annotator": "^3.1.0",
+    "@selia/annotator": "^3.1.2",
     "react": "^16.9.0",
     "react-dom": "^16.9.0"
   }
