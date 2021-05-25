@@ -1,14 +1,17 @@
-import ReactDOM from 'react-dom';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import '@fortawesome/fontawesome-free/css/all.css';
+import ReactDOM from "react-dom";
 
-import 'popper.js/dist/popper.min.js';
-import 'bootstrap/dist/js/bootstrap.min.js';
+import "bootstrap/dist/css/bootstrap.min.css";
+import "@fortawesome/fontawesome-free/css/all.css";
 
-import $ from 'jquery/dist/jquery.min.js';
-import Alert from 'bootstrap/js/dist/alert.js';
-import Visualizer from '@selia/image-visualizer';
+import "popper.js/dist/popper.min.js";
+import "bootstrap/dist/js/bootstrap.min.js";
 
+import $ from "jquery/dist/jquery.min.js";
+import Alert from "bootstrap/js/dist/alert.js";
+import Visualizer from "@selia/image-visualizer";
+
+import { DefaultAnnotationStorage } from "@selia/annotator";
+import { DefaultStateManager } from "@selia/annotator";
 
 let visualizer = null;
 let annotator = null;
@@ -21,57 +24,65 @@ function annotatorActivator() {
 }
 
 function toggleActivate() {
-  annotator.toggleActivate();
   visualizer.toggleActivate();
+  annotator.toggleActivate();
 }
 
-let id = 0;
-function registerAnnotation(annotation) {
-  const parent = document.getElementById('alert-container');
-
-  const alertDiv = document.createElement('div');
-  alertDiv.className = 'alert alert-primary';
-  alertDiv.innerHTML = `Annotation: ${JSON.stringify(annotation)}`;
-
-  alertDiv.setAttribute('role', 'alert');
-  alertDiv.setAttribute('style', 'position: absolute; z-index:99; opacity: 0.9; display: none;');
-
+function createAlert(data) {
+  const parent = document.getElementById("alert-container");
+  const alertDiv = document.createElement("div");
+  alertDiv.className = "alert alert-primary";
+  alertDiv.innerHTML = `${JSON.stringify(data)}`;
+  alertDiv.setAttribute("role", "alert");
+  alertDiv.setAttribute(
+    "style",
+    "position: absolute; z-index:99; opacity: 0.9; display: none;"
+  );
   parent.appendChild(alertDiv);
-
   const alert = new Alert(alertDiv);
-
-  $('.alert').fadeIn('fast');
-
+  $(".alert").fadeIn("fast");
   setTimeout(() => {
-    $('.alert').fadeOut('fast', () => alert.close());
+    $(".alert").fadeOut("fast", () => alert.close());
   }, 1000);
+}
 
-  id += 1;
-  return id.toString();
+class AlertStorage extends DefaultAnnotationStorage {
+  create(annotation) {
+    createAlert(annotation);
+    return super.create(annotation);
+  }
+}
+
+class StateManager extends DefaultStateManager {
+  activate() {
+    visualizer.deactivate();
+    super.activate();
+  }
 }
 
 visualizer = new Visualizer({
-  canvas: document.getElementById('visualizerCanvas'),
-  toolbar: document.getElementById('visualizerToolbar'),
+  canvas: document.getElementById("visualizerCanvas"),
+  toolbar: document.getElementById("visualizerToolbar"),
   itemInfo: {
-    url: 'http://selia2.conabio.gob.mx/media/items/1/2/1/f9eaffd914aab6d7b9d77899da0377a681972eb3e01f3bdaeb5477aa4b1bb3f8.jpe',
+    url:
+      "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/SIPI_Jelly_Beans_4.1.07.tiff/lossy-page1-256px-SIPI_Jelly_Beans_4.1.07.tiff.jpg",
   },
   activator: visualizerActivator,
   active: false,
 });
 
 window.onkeypress = (event) => {
-  if (event.key === 'Enter') {
+  if (event.key === "Enter") {
     toggleActivate();
   }
 };
 
-import(/* webpackIgnore: true */'/annotator.js').then((module) => {
+import(/* webpackIgnore: true */ "/annotator.js").then((module) => {
   annotator = new AnnotatorTool.default({
-    canvas: document.getElementById('annotatorCanvas'),
-    toolbar: document.getElementById('annotatorToolbar'),
-    activator: annotatorActivator,
     visualizer,
-    registerAnnotation,
+    canvas: document.getElementById("annotatorCanvas"),
+    toolbar: document.getElementById("annotatorToolbar"),
+    state: new StateManager({ active: true }),
+    annotations: new AlertStorage(),
   });
 });
